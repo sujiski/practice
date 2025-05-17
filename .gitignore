@@ -1,0 +1,17 @@
+# バイナリファイルを無視
+*.exe
+*.o
+*.out
+
+# VSCode の設定を無視
+.vscode/
+
+# 一時ファイルを無視
+*.log
+*.tmp
+
+# ビルドディレクトリを無視
+build/
+
+# Pythonの仮想環境
+venv/
