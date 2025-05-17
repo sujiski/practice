@@ -15,3 +15,9 @@ build/
 
 # Pythonの仮想環境
 venv/
+
+# MakeFile 関連は無視
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
