@@ -17,6 +17,7 @@
 class EventBus {
  public:
   using Json = nlohmann::json;
+  using Callback = std::function<void(const std::string&, const Json&)>;
 
   /**
    * @brief サブスクライバに JSON データを通知します。
@@ -32,9 +33,9 @@ class EventBus {
    * @param topic 登録するトピック名
    * @param callback トピック受信時に呼ばれる関数
    */
-  void subscribe(const std::string& topic, std::function<void(const std::string&, const Json&)> callback);
+  void subscribe(const std::string& topic, Callback callback);
 
  private:
   // トピックごとのコールバック関数リスト
-  std::unordered_map<std::string, std::vector<std::function<void(const std::string&, const Json&)>>> subscribers_;
+  std::unordered_map<std::string, std::vector<Callback>> subscribers_;
 };
