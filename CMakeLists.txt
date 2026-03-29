@@ -9,6 +9,7 @@ add_executable(sim
     domain/model/Vehicle.cpp
     domain/model/Environment.cpp
     domain/service/Controller.cpp
+    usecase/RunSimulation.cpp
     infrastructure/Logger.cpp
 )
 
