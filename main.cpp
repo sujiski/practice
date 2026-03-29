@@ -6,13 +6,21 @@
 
 int main()
 {
-    domain::model::Environment env( domain::model::Vehicle(0.0 , 0.0, 0.0) , domain::model::Vehicle(100.0 , 10.0, 0.0) );
+    const double initial_position_ego = 0.0;
+    const double initial_velocity_ego = 2.0;
+    const double initial_acceleration_ego = 0.0;
+    const double initial_position_lead = 10.0;
+    const double initial_velocity_lead = 10.0;
+    const double initial_acceleration_lead = 0.0;
+    domain::model::Environment env(
+        domain::model::Vehicle(initial_position_ego , initial_velocity_ego, initial_acceleration_ego) ,
+        domain::model::Vehicle(initial_position_lead , initial_velocity_lead, initial_acceleration_lead) );
     domain::service::Controller controller;
     infrastructure::Logger logger("data/output/simulation_log.csv");
     logger.write_header();
 
     // シミュレーション設定
-    const int total_steps = 100;
+    const int total_steps = 600;
     const double step_interval_sec = 0.1;
     double acceleration;
     int step = 0;
