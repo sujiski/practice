@@ -2,11 +2,14 @@
 #include "domain/model/Vehicle.hpp"
 #include "domain/model/Environment.hpp"
 #include "domain/service/Controller.hpp"
+#include "infrastructure/Logger.hpp"
 
 int main()
 {
     domain::model::Environment env( domain::model::Vehicle(0.0 , 0.0, 0.0) , domain::model::Vehicle(100.0 , 10.0, 0.0) );
     domain::service::Controller controller;
+    infrastructure::Logger logger("data/output/simulation_log.csv");
+    logger.write_header();
 
     // シミュレーション設定
     const int total_steps = 100;
@@ -23,6 +26,16 @@ int main()
         // 状態更新
         env.ego().update(step_interval_sec);
         env.lead().update(step_interval_sec);
+
+        // log出力
+        const double time = step * step_interval_sec;
+        logger.log(
+            time,
+            env.distance(),
+            env.ego().get_velocity(),
+            env.lead().get_velocity(),
+            acceleration
+        );
 
         // 状態出力（デバッグ用）
         std::cout << "  Distance: " << env.distance() << " m\n";
