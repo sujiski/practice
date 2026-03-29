@@ -10,6 +10,7 @@ add_executable(sim
     domain/model/Environment.cpp
     domain/service/Controller.cpp
     usecase/RunSimulation.cpp
+    usecase/SimulationStep.cpp
     infrastructure/Logger.cpp
 )
 
