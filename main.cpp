@@ -1,64 +1,39 @@
-#include <chrono>
-#include <thread>
 #include <iostream>
+#include "domain/model/Vehicle.hpp"
+#include "domain/model/Environment.hpp"
+#include "domain/service/Controller.hpp"
 
-#include "acc_simulation/src/common/EventBus.h"
-#include "acc_simulation/src/sensor/SensorService.h"
-#include "acc_simulation/src/decision/DecisionService.h"
-#include "acc_simulation/src/control/ControlService.h"
-#include "acc_simulation/src/vehicle/VehicleState.h"
-#include "acc_simulation/src/logger/LoggerService.h"
+int main()
+{
+    domain::model::Environment env( domain::model::Vehicle(0.0 , 0.0, 0.0) , domain::model::Vehicle(100.0 , 10.0, 0.0) );
+    domain::service::Controller controller;
 
-using namespace std::chrono_literals;
+    // シミュレーション設定
+    const int total_steps = 100;
+    const double step_interval_sec = 0.1;
+    double acceleration;
+    int step = 0;
+    for(step = 0; step < total_steps; step += 1) {
+        std::cout << "Step " << step << std::endl;
 
-/**
- * @brief メインエントリポイント。全サービスを初期化し、制御ループを実行します。
- *
- * 各サービスは EventBus を介して疎結合に通信します。
- * この関数は指定されたステップ数だけ一定周期でシミュレーションを行います。
- *
- * @return int 終了コード（常に 0 を返します）
- */
-int main() {
-  // EventBus の作成（全サービスで共有）
-  EventBus event_bus;
+        // 加速度(制御入力)を計算
+        acceleration = controller.compute_acceleration(env);
+        env.ego().set_acceleration(acceleration);
 
-  // 各サービスの初期化
-  sensor::SensorService sensor(event_bus);
-  decision::DecisionService decision(event_bus);
-  control::ControlService control(event_bus);
-  vehicle::VehicleState vehicle(event_bus);
+        // 状態更新
+        env.ego().update(step_interval_sec);
+        env.lead().update(step_interval_sec);
 
-  std::vector<std::string> log_topics = {
-      "sensor/obstacle_distance",
-      "decision/following_state",
-      "control/accel_command",
-      "vehicle/ego_state"
-  };
-  logger::LoggerService logger(event_bus, log_topics, true, "acc_simulation.log");
+        // 状態出力（デバッグ用）
+        std::cout << "  Distance: " << env.distance() << " m\n";
+        std::cout << "  Position_ego: " << env.ego().get_position()
+                  << " m, Velocity_ego: " << env.ego().get_velocity()
+                  << " m/s" << std::endl;
+        std::cout << "  Position_lead: " << env.lead().get_position()
+                  << " m, Velocity_lead: " << env.lead().get_velocity()
+                  << " m/s" << std::endl;
+                }
 
-  // 各サービスの購読初期化
-  decision.init();
-  control.init();
-  vehicle.init();
-  logger.init();
-
-  // シミュレーション設定
-  const int total_steps = 100;             // 総ステップ数
-  const int step_interval_ms = 100;        // 各ステップの時間間隔（ミリ秒）
-
-  std::cout << "Simulation started.\n";
-
-  for (int step = 0; step < total_steps; ++step) {
-    std::cout << "Step " << step << std::endl;
-
-    // 1. センサ情報を発行
-    sensor.publishSensorData(step);
-
-    // 2. 一定周期で次のステップまで待機
-    std::this_thread::sleep_for(std::chrono::milliseconds(step_interval_ms));
-  }
-
-  std::cout << "Simulation finished.\n";
-  return 0;
+    std::cout << "Simulation finished.\n";
+    return 0;
 }
