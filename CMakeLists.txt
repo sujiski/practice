@@ -46,3 +46,5 @@ target_link_libraries(sim_test gtest_main)
 
 include(GoogleTest)
 gtest_discover_tests(sim_test)
+
+set(CMAKE_BUILD_TYPE Debug)

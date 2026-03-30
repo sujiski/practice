@@ -14,9 +14,9 @@ double Controller::compute_acceleration(const domain::model::Environment& env) c
     double acceleration_request;
 
     // 加減速指令 (車間距離 Pゲイン)
-    const double gainP_distaice = 0.3; // [1/sec^2]
+    const double gainP_dist2accel = 0.3; // [1/sec^2]
     double acceleration_request_pterm;
-    acceleration_request_pterm = gainP_distaice * distance_error;
+    acceleration_request_pterm = gainP_dist2accel * distance_error;
 
     // 相対速度の取得
     double velocity_lead;
@@ -27,9 +27,9 @@ double Controller::compute_acceleration(const domain::model::Environment& env) c
     relative_velocity = velocity_lead - velocity_ego;
 
     // 加減速指令 (相対速度 Dゲイン)
-    const double gainD_velocity = 1.0; // [1/sec]
+    const double gainD_v2accel = 1.0; // [1/sec]
     double acceleration_request_dterm;
-    acceleration_request_dterm = gainD_velocity * relative_velocity;
+    acceleration_request_dterm = gainD_v2accel * relative_velocity;
 
     acceleration_request = acceleration_request_pterm + acceleration_request_dterm;
 
